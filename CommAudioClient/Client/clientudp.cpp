@@ -1,4 +1,4 @@
-r#include "ClientUDP.h"
+#include "ClientUDP.h"
 
 bool ClientUDP::InitializeSocket(short port)
 {
@@ -132,25 +132,25 @@ bool ClientUDP::Send(char * message, int size)
 {
     Q_UNUSED(message)
     Q_UNUSED(size)
-    DOWRD flags = 0;
+    DWORD flags = 0;
     SendingSocketInfo.DataBuf.buf = message;
     SendingSocketInfo.DataBuf.len = size;
-    memset(&SendingSocketInfo->Overlapped, '\0', sizeof(WSAOVERLAPPED));
-    SOCKET_INFO->Overlapped.hEvent = WSACreateEvent();
-    if (WSASendTo(SendingSocketInfo->Socket,
-        &(SendingSocketInfo->DataBuf),
+    memset(&SendingSocketInfo.Overlapped, '\0', sizeof(WSAOVERLAPPED));
+    SendingSocketInfo.Overlapped.hEvent = WSACreateEvent();
+    if (WSASendTo(SendingSocketInfo.Socket,
+        &(SendingSocketInfo.DataBuf),
         1,
-        &d,
+        &SendingSocketInfo.BytesSEND,
         flags,
-        (SOCKADDR *)Server,
-        sizeof(*Server),
-        &SendingSocketInfo->Overlapped,
+        (SOCKADDR *)&SourceAddress,
+        sizeof(SourceAddress),
+        &SendingSocketInfo.Overlapped,
         NULL)
         < 0)
     {
         if (WSAGetLastError() == WSA_IO_PENDING)
         {
-            if(WSAWaitForMultipleEvents(1, &SendingSocketInfo->Overlapped.hEvent, FALSE, 100, FALSE) == WAIT_TIMEOUT)
+            if(WSAWaitForMultipleEvents(1, &SendingSocketInfo.Overlapped.hEvent, FALSE, 100, FALSE) == WAIT_TIMEOUT)
             {
                 std::cout << "RecvFrom() Timeout" << std::endl;
                 return FALSE;

@@ -159,15 +159,15 @@ void MainWindow::play_voice()
 {
     if(m_voice_generator->isPlaying())
     {
-        //qDebug() << "Audio file is resuming.";
+        //We are assuming that the voice will always be playing.
+        /*//qDebug() << "Audio file is resuming.";
         m_audioOutput->reset();
         m_audioOutput->start(m_voice_generator);
-        m_audioOutput->setVolume(qreal(100.0f/100.0f));
+        m_audioOutput->setVolume(qreal(100.0f/100.0f));*/
     }
     else
     {
         //qDebug() << "Starting file from beginning.";
-
         m_voice_generator->start();
 
         m_audioOutput->start(m_voice_generator);

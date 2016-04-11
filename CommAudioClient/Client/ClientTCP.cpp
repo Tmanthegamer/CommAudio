@@ -7,22 +7,16 @@ bool ClientTCP::InitializeSocket(short port, char *ip)
         return FALSE;
     }
 
-    if ((listenSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED)) == INVALID_SOCKET)
+    if ((SocketInfo.Socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED)) == INVALID_SOCKET)
     {
         std::cout << "WSASocket() failed with error " <<  WSAGetLastError() << std::endl;
         return FALSE;
     }
-    bool fFlag = true;
-    if(setsockopt(listenSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&fFlag, sizeof(fFlag)) == SOCKET_ERROR)
-    {
-        std::cout << "InitializeSocket()::setsockopt() failed with error " << WSAGetLastError() << std::endl;
-        return FALSE;
-    }
-
     LocalAddr.sin_family = AF_INET;
     LocalAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     LocalAddr.sin_port = htons(port);
 
+<<<<<<< HEAD:QMLMaterialTest_b/Client/ClientTCP.cpp
     if(bind(listenSocket, (struct sockaddr*) &LocalAddr, sizeof(LocalAddr)) == SOCKET_ERROR)
     {
         std::cout << "bind() failed with error " << WSAGetLastError() << std::endl;
@@ -34,10 +28,24 @@ bool ClientTCP::InitializeSocket(short port, char *ip)
     }
 
     return TRUE;
+=======
+    struct hostent	*hp;
+    if ((hp = gethostbyname(ip)) == NULL)
+    {
 
-}
-void ClientTCP::acceptConnection(){
-    SocketInfo.Socket = accept(listenSocket, NULL, NULL);
+        return FALSE;
+    }
+
+    memcpy((char *)&LocalAddr.sin_addr, hp->h_addr, hp->h_length);
+
+    if (connect (SocketInfo.Socket, (struct sockaddr *)&LocalAddr, sizeof(LocalAddr)) == -1)
+        {
+            qDebug() << "Can't connect to server: " << WSAGetLastError();
+            return false;
+        }
+    return true;
+>>>>>>> d13fd2231687a6fb4d138f89662dc6d3e0e31e0c:CommAudioClient/Client/ClientTCP.cpp
+
 }
 
 bool ClientTCP::Recv() {
@@ -127,6 +135,7 @@ bool ClientTCP::Close() {
     return true;
 }
 
+<<<<<<< HEAD:QMLMaterialTest_b/Client/ClientTCP.cpp
 bool ClientTCP::connectToServer(short port, char *ip) {
     LocalAddr.sin_family = AF_INET;
     LocalAddr.sin_port = htons(port);
@@ -147,3 +156,5 @@ bool ClientTCP::connectToServer(short port, char *ip) {
         }
     return true;
 }
+=======
+>>>>>>> d13fd2231687a6fb4d138f89662dc6d3e0e31e0c:CommAudioClient/Client/ClientTCP.cpp

@@ -159,8 +159,10 @@ void MainWindow::play_voice()
 {
     if(m_voice_generator->isPlaying())
     {
-        qDebug() << "Audio file is resuming.";
-        m_audioOutput->resume();
+        //qDebug() << "Audio file is resuming.";
+        m_audioOutput->reset();
+        m_audioOutput->start(m_voice_generator);
+        m_audioOutput->setVolume(qreal(100.0f/100.0f));
     }
     else
     {
@@ -489,16 +491,19 @@ void MainWindow::handleSongDataAvailable(int len)
 void MainWindow::handleVoiceDataAvailable(int len)
 {
     char* buf = (char*)malloc(DATA_BUFSIZE);
-    CBPop(&cb_voice_data, buf);
-    //emit to TCP that this is available
+    //std::cerr << "MainWindow::handleVoiceData>>count:" << cb_voice_data.Count << std::endl;
+    if(cb_voice_data.Count != 0)
+    {
+        CBPop(&cb_voice_data, buf);
+        //emit to TCP that this is available
 
-    QByteArray data = QByteArray::fromRawData(buf, len);
+        QByteArray data = QByteArray::fromRawData(buf, len);
 
-    qDebug() << "Voice size: " << data.size();
-    m_voice_generator->AddMoreDataToBufferFromQByteArray(data, data.size());
-
-    free(buf);
+        //qDebug() << "Voice size: " << data.size();
+        m_voice_generator->AddMoreDataToBufferFromQByteArray(data, data.size());
+    }
     play_voice();
+    free(buf);
 }
 
 void MainWindow::handleSongDataFinished()

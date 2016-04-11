@@ -42,8 +42,6 @@ private:
     int                 r_bytes_AVAILABLE;
     int                 size;
     char*               r_data;
-    qint64              pos;
-
 signals:
     void dataAvailable(int len);
 

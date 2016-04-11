@@ -17,11 +17,11 @@ InputBuffer::~InputBuffer()
 qint64 InputBuffer::readData(char *data, qint64 maxlen)
 {
     qint64 chunk = 0;
-    while(i_busy)
+    /*while(i_busy)
     {
-        ;
+        std::cout << "Input::read>>busy" << std::endl;
     }
-    i_busy = true;
+    i_busy = true;*/
 
     if(maxlen <= i_size)
     {
@@ -33,7 +33,7 @@ qint64 InputBuffer::readData(char *data, qint64 maxlen)
     }
     memcpy(data, i_buffer.data(), maxlen);
     i_buffer.remove(0, chunk);
-
+    std::cout << "Input::read>>before:" << i_size << " after:" << i_size-chunk << std::endl;
     i_size -= chunk;
 
     i_busy = false;
@@ -43,14 +43,15 @@ qint64 InputBuffer::readData(char *data, qint64 maxlen)
 
 qint64 InputBuffer::writeData(const char *data, qint64 len)
 {
-    while(i_busy){
-        ;
+    /*while(i_busy){
+        std::cout << "Input::write>>busy" << std::endl;;
     }
-    i_busy = true;
+    i_busy = true;*/
 
     i_buffer.resize(i_size + len);
     memcpy(i_buffer.data() + i_size, data, len);
 
+    //std::cout << "Input::write>>before:" << i_size << " after:" << i_size+len << std::endl;
     i_size += len;
 
     i_busy = false;

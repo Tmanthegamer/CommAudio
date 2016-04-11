@@ -47,8 +47,6 @@ void Recorder::start()
     connect(r_input, SIGNAL(notify()), this, SLOT(notified()));
     connect(r_input,SIGNAL(stateChanged(QAudio::State)),this, SLOT(handleAudioInputState(QAudio::State)));
 
-    qDebug() << "platform buffer size:" << r_input->bufferSize();
-
     inProgress = true;
     r_input->start(r_buffer);
 }
@@ -58,7 +56,6 @@ void Recorder::stop()
     if(inProgress)
     {
         r_input->stop();
-        r_buffer->close();
         delete r_input;
         inProgress = false;
     }
@@ -66,7 +63,10 @@ void Recorder::stop()
 
 qint64 Recorder::readData(char *data, qint64 maxlen)
 {
-    return r_buffer->readData(data, maxlen);
+    //qDebug() << "Recorder::readData>>reading";
+    qint64 chunk = 0;
+    chunk = r_buffer->readData(data, maxlen);
+    return chunk;
 }
 
 const QByteArray Recorder::readAll()
@@ -81,6 +81,7 @@ int Recorder::bytesWritten()
 
 void Recorder::notified()
 {
+    qDebug() << "Notified";
     r_bytes_AVAILABLE = 0;
     if(audio_state == QAudio::ActiveState)
     {
@@ -89,8 +90,7 @@ void Recorder::notified()
         if(r_bytes_AVAILABLE > DATA_BUFSIZE) // Don't exceed max packet size.
             r_bytes_AVAILABLE = DATA_BUFSIZE;
 
-        qDebug() << "Mic data to send:" << r_bytes_AVAILABLE;
-        r_buffer->readData(r_data, r_bytes_AVAILABLE);
+        readData(r_data, r_bytes_AVAILABLE);
 
         CBPushBack(&cb_voice_data, (void*)r_data);
         emit dataAvailable(r_bytes_AVAILABLE);
@@ -99,7 +99,7 @@ void Recorder::notified()
 
 void Recorder::handleAudioInputState(QAudio::State state)
 {
-    qDebug() << "Audio State:" << state;
+    //qDebug() << "Audio State:" << state;
 
     audio_state = state;
 
@@ -118,7 +118,7 @@ bool Recorder::SetFormat()
 {
     r_format.setSampleRate(16000);
     r_format.setChannelCount(1);
-    r_format.setSampleSize(8);
+    r_format.setSampleSize(16);
     r_format.setCodec("audio/pcm");
     r_format.setByteOrder(QAudioFormat::LittleEndian);
     r_format.setSampleType(QAudioFormat::UnSignedInt);

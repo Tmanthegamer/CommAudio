@@ -3,6 +3,7 @@
 
 #include <QBuffer>
 #include <QByteArray>
+#include "globals.h"
 
 
 class InputBuffer : public QBuffer

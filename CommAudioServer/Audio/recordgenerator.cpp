@@ -15,13 +15,13 @@ void RecordGenerator::start()
 
 void RecordGenerator::stop()
 {
-    qDebug() << "RecordGenerator stopped.";
+    //qDebug() << "RecordGenerator stopped.";
     close();
 }
 
 void RecordGenerator::resume()
 {
-    qDebug() << "DataGenerator resumed.";
+    //qDebug() << "DataGenerator resumed.";
     open(QIODevice::ReadOnly);
 }
 
@@ -43,7 +43,7 @@ qint64 RecordGenerator::readData(char *data, qint64 maxlen)
         // We do not want the read any more data than our contents.
         rg_readpos = (rg_readpos + chunk) % rg_buffer.size();
 
-        qDebug() << "RecordGenerator::readData>>dataAvailable[" << chunk << "]";
+        //qDebug() << "RecordGenerator::readData>>dataAvailable[" << chunk << "]";
 
         RemoveBufferedData(chunk);
 
